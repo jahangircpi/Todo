@@ -21,20 +21,82 @@ class HomePagee extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Get.dialog(buildDialog(size, titlecontroller, subtitlecontroller,
-                context, pickthedate, taskcolor));
+                context, pickthedate, taskcolor, false, 0));
           },
           child: Icon(Icons.add),
         ),
         bottomNavigationBar: buildBottomAppBar(size),
         body: SafeArea(
             child: Container(
-          child: ListView.builder(
+                child: Obx(
+          () => ListView.builder(
             itemCount: getxcontroller.ListOfData.value.length,
             itemBuilder: (BuildContext context, int index) {
-              return buildObx(index, size);
+              return Dismissible(
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      final bool res = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text(
+                                  "Are you sure you want to delete ${getxcontroller.ListOfData[index].title}?"),
+                              actions: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    GestureDetector(
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    SizedBox(
+                                      width: 100,
+                                    ),
+                                    GestureDetector(
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onTap: () {
+                                        getxcontroller.ListOfData.removeAt(
+                                            index);
+
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            );
+                          });
+                      return res;
+                    } else {
+                      titlecontroller.text =
+                          getxcontroller.ListOfData.value[index].title;
+                      subtitlecontroller.text =
+                          getxcontroller.ListOfData.value[index].subtitle;
+                      Get.dialog(buildDialog(
+                          size,
+                          titlecontroller,
+                          subtitlecontroller,
+                          context,
+                          pickthedate,
+                          taskcolor,
+                          true,
+                          index));
+                    }
+                  },
+                  key: Key(getxcontroller.ListOfData[index].toString()),
+                  child: buildObx(index, size));
             },
           ),
-        )));
+        ))));
   }
 
   Padding buildObx(int index, Size size) {
@@ -87,7 +149,9 @@ class HomePagee extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              getxcontroller.ListOfData[index].date,
+                              getxcontroller.ListOfData[index].date
+                                  .toString()
+                                  .split(" ")[0],
                               style:
                                   TextStyle(fontSize: 20, color: Colors.white),
                             ),
@@ -148,7 +212,9 @@ class HomePagee extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                getxcontroller.ListOfData[index].date,
+                                getxcontroller.ListOfData[index].date
+                                    .toString()
+                                    .split(" ")[0],
                               ),
                             ))
                       ],
@@ -163,6 +229,8 @@ class HomePagee extends StatelessWidget {
 
   BottomAppBar buildBottomAppBar(Size size) {
     return BottomAppBar(
+      notchMargin: 11,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
       shape: CircularNotchedRectangle(),
       child: Container(
         color: Colors.blue,
@@ -189,7 +257,9 @@ class HomePagee extends StatelessWidget {
       TextEditingController subtitlecontroller,
       BuildContext context,
       DateTime pickthedate,
-      Color taskcolor) {
+      Color taskcolor,
+      bool isUpdate,
+      listIndex) {
     return Dialog(
       child: Container(
         height: size.height * 0.60,
@@ -328,11 +398,19 @@ class HomePagee extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
-                  getxcontroller.ListOfData.add(TodoList(
-                      title: titlecontroller.text,
-                      subtitle: subtitlecontroller.text,
-                      date: pickthedate.toString(),
-                      status: taskcolor));
+                  if (isUpdate) {
+                    getxcontroller.ListOfData.value[listIndex] = TodoList(
+                        title: titlecontroller.text,
+                        subtitle: subtitlecontroller.text,
+                        date: pickthedate.toString(),
+                        status: taskcolor);
+                  } else {
+                    getxcontroller.ListOfData.add(TodoList(
+                        title: titlecontroller.text,
+                        subtitle: subtitlecontroller.text,
+                        date: pickthedate.toString(),
+                        status: taskcolor));
+                  }
                   Get.back();
                 },
                 child: Container(
