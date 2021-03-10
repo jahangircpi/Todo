@@ -227,7 +227,8 @@ class HomePagee extends StatelessWidget {
             child: Container(
                 child: Obx(
           () => ListView.builder(
-            itemCount: getxcontroller.ListOfData.value.length,
+            shrinkWrap: true,
+            itemCount: getxcontroller.ListOfData.length,
             itemBuilder: (BuildContext context, int index) {
               return Dismissible(
                   confirmDismiss: (direction) async {
@@ -338,7 +339,6 @@ class HomePagee extends StatelessWidget {
                                     controller: titlecontroller,
                                     decoration: InputDecoration(
                                       hintText: "Title",
-                                      // enabled: true,
                                       focusedBorder: InputBorder.none,
                                     )),
                               ),
@@ -366,16 +366,115 @@ class HomePagee extends StatelessWidget {
                               ),
                               Expanded(
                                   child: Opacity(opacity: 0, child: Divider())),
+                              Obx(() => Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        color: getxcontroller.taskcolor.value,
+                                        height: size.height * 0.05,
+                                        width: size.width * 0.1,
+                                      ),
+                                    ],
+                                  )),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    PhysicalModel(
+                                      color: Colors.yellow,
+                                      elevation: 10,
+                                      child: InkWell(
+                                        onTap: () {
+                                          showDatePicker(
+                                            context: context,
+                                            initialDate: pickthedate == null
+                                                ? DateTime.now()
+                                                : pickthedate,
+                                            firstDate: DateTime(2021),
+                                            lastDate: DateTime(2222),
+                                          ).then((value) {
+                                            pickthedate = value;
+                                          });
+                                        },
+                                        child: Container(
+                                            child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "PICK THE DATE",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        )),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      taskcolor = Colors.blue;
+                                      getxcontroller.taskcolor.value =
+                                          Colors.blue;
+                                    },
+                                    child: Container(
+                                      color: Colors.blue,
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.1,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      taskcolor = Colors.pink;
+                                      getxcontroller.taskcolor.value =
+                                          Colors.pink;
+                                    },
+                                    child: Container(
+                                      color: Colors.pink,
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.1,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      taskcolor = Colors.orange;
+                                      getxcontroller.taskcolor.value =
+                                          Colors.orange;
+                                    },
+                                    child: Container(
+                                      color: Colors.orange,
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.1,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      taskcolor = Colors.green;
+
+                                      getxcontroller.taskcolor.value =
+                                          Colors.green;
+                                    },
+                                    child: Container(
+                                      color: Colors.green,
+                                      height: size.height * 0.05,
+                                      width: size.width * 0.1,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: InkWell(
                                   onTap: () {
-                                    getxcontroller.ListOfData.value[index] =
-                                        TodoList(
-                                            title: titlecontroller.text,
-                                            subtitle: subtitlecontroller.text,
-                                            date: pickthedate.toString(),
-                                            status: taskcolor);
+                                    getxcontroller.ListOfData[index] = TodoList(
+                                        title: titlecontroller.text,
+                                        subtitle: subtitlecontroller.text,
+                                        date: pickthedate.toString(),
+                                        status: taskcolor);
 
                                     Get.back();
                                   },
