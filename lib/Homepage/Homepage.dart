@@ -1,7 +1,9 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:todo/FavoriteList/favoritelists.dart';
 import 'package:todo/GetxController/controllergetx.dart';
 import 'package:todo/Global/listofdata.dart';
 
@@ -16,6 +18,8 @@ class HomePagee extends StatelessWidget {
     Color taskcolor;
     DateTime pickthedate = DateTime.now();
 
+    bool isclicked = false;
+
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Container(
@@ -24,8 +28,9 @@ class HomePagee extends StatelessWidget {
           child: FloatingActionButton(
             backgroundColor: Colors.cyan,
             splashColor: Colors.pinkAccent,
-            isExtended: true,
             onPressed: () {
+              titlecontroller.clear();
+              subtitlecontroller.clear();
               Get.dialog(
                   Dialog(
                     child: Container(
@@ -215,10 +220,23 @@ class HomePagee extends StatelessWidget {
                   opacity: 0,
                   child: Icon(Icons.favorite),
                 ),
-                Opacity(
-                  opacity: 0,
-                  child: Icon(Icons.delete),
-                ),
+                Obx(() => Badge(
+                      badgeContent:
+                          Text(getxcontroller.newItem.length.toString()),
+                      child: Opacity(
+                        opacity: 1,
+                        child: IconButton(
+                          onPressed: () {
+                            Get.to(favoritelist());
+                          },
+                          icon: Icon(
+                            Icons.favorite,
+                            color: Colors.pink,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    ))
               ],
             ),
           ),
@@ -300,9 +318,20 @@ class HomePagee extends StatelessWidget {
                                               ),
                                             ),
                                             onTap: () {
+                                              var myIndex = getxcontroller
+                                                  .newItem
+                                                  .indexWhere((element) =>
+                                                      getxcontroller
+                                                          .ListOfData[index]
+                                                          .date ==
+                                                      element.date);
+                                              if (myIndex.isNegative) {
+                                              } else {
+                                                getxcontroller.newItem
+                                                    .removeAt(myIndex);
+                                              }
                                               getxcontroller.ListOfData
                                                   .removeAt(index);
-
                                               Navigator.of(context).pop();
                                               Get.snackbar(
                                                   "Oops!", "you just deleted",
@@ -322,10 +351,10 @@ class HomePagee extends StatelessWidget {
                       return res;
                     } else {
                       titlecontroller.text =
-                          getxcontroller.ListOfData.value[index].title;
+                          getxcontroller.ListOfData[index].title;
                       subtitlecontroller.text =
-                          getxcontroller.ListOfData.value[index].subtitle;
-                      taskcolor = getxcontroller.ListOfData.value[index].status;
+                          getxcontroller.ListOfData[index].subtitle;
+                      taskcolor = getxcontroller.ListOfData[index].status;
                       Get.dialog(Dialog(
                         child: Container(
                           height: size.height * 0.60,
@@ -617,10 +646,45 @@ class HomePagee extends StatelessWidget {
                                   children: [
                                     Expanded(
                                         flex: 0,
-                                        child: Container(
-                                          width: size.width * 0.20,
-                                          color: getxcontroller
-                                              .ListOfData[index].status,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // getxcontroller.newItem.add(
+                                            //     getxcontroller
+                                            //         .ListOfData[index]);
+                                            // getxcontroller.newItem.any(
+                                            //     (element) =>
+                                            //         getxcontroller
+                                            //             .ListOfData[index]
+                                            //             .date ==
+                                            //         element.date);
+
+                                            var myIndex = getxcontroller.newItem
+                                                .indexWhere((element) =>
+                                                    getxcontroller
+                                                        .ListOfData[index]
+                                                        .date ==
+                                                    element.date);
+                                            if (myIndex.isNegative) {
+                                              getxcontroller.newItem.add(
+                                                  getxcontroller
+                                                      .ListOfData[index]);
+                                            } else {
+                                              getxcontroller.newItem
+                                                  .removeAt(myIndex);
+                                            }
+                                          },
+                                          child: Container(
+                                            width: size.width * 0.20,
+                                            color: getxcontroller
+                                                .ListOfData[index].status,
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.favorite,
+                                                color: Colors.red,
+                                                size: 50,
+                                              ),
+                                            ),
+                                          ),
                                         )),
                                     Expanded(
                                       child: Column(
