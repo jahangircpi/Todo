@@ -131,19 +131,10 @@ class favoritelist extends StatelessWidget {
                                   flex: 0,
                                   child: InkWell(
                                     onTap: () {
-                                      var myIndex = favoritecontroller.newItem
-                                          .indexWhere((element) =>
-                                              favoritecontroller
-                                                  .ListOfData[index].date ==
-                                              element.date);
-                                      if (myIndex.isNegative) {
-                                        favoritecontroller.newItem.add(
-                                            favoritecontroller
-                                                .ListOfData[index]);
-                                      } else {
-                                        favoritecontroller.newItem
-                                            .removeAt(myIndex);
-                                      }
+                                      favoritecontroller.newItem
+                                          .removeAt(index);
+                                      Get.snackbar("Wow!",
+                                          "You have removed ${favoritecontroller.ListOfData[index].title} from your favorite list");
                                     },
                                     child: Container(
                                       width: size.width * 0.20,
